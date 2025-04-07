@@ -49,8 +49,8 @@ jobs:
 
     - name: Create workspace
       run: |
-        mkdir -p workspace && cd workspace
-        echo "workspace-folder=$(pwd)" >> $GITHUB_OUTPUT
+        mkdir -p workspace
+        echo "workspace-folder=$(pwd)/workspace" >> $GITHUB_OUTPUT
       id: ws
 
     - name: Install dependencies
@@ -89,6 +89,7 @@ jobs:
     - name: Clone device tree
       run: |
         cd ${{ steps.ws.outputs.workspace-folder }}/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
+        mkdir -p $(dirname ${{ github.event.inputs.DEVICE_PATH }})
         git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ${{ github.event.inputs.DEVICE_PATH }}
 
     - name: Set swap (12GB)
