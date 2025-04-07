@@ -49,8 +49,8 @@ jobs:
 
     - name: Create workspace
       run: |
-        mkdir -p workspace
-        echo "workspace-folder=$(pwd)/workspace" >> $GITHUB_OUTPUT
+        mkdir -p workspace && cd workspace
+        echo "workspace-folder=$(pwd)" >> $GITHUB_OUTPUT
       id: ws
 
     - name: Install dependencies
@@ -78,6 +78,13 @@ jobs:
         echo "export FOX_USE_BASH_SHELL=true" >> $GITHUB_ENV
         echo "export FOX_ADVANCED_SECURITY=true" >> $GITHUB_ENV
 
+    - name: Install repo tool
+      run: |
+        mkdir -p ~/bin
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+        echo "export PATH=~/bin:$PATH" >> $GITHUB_ENV
+
     - name: Sync OrangeFox sources
       run: |
         cd ${{ steps.ws.outputs.workspace-folder }}
@@ -89,7 +96,6 @@ jobs:
     - name: Clone device tree
       run: |
         cd ${{ steps.ws.outputs.workspace-folder }}/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
-        mkdir -p $(dirname ${{ github.event.inputs.DEVICE_PATH }})
         git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ${{ github.event.inputs.DEVICE_PATH }}
 
     - name: Set swap (12GB)
